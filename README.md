@@ -1,4 +1,4 @@
-# update_ui_addon
+# update_addons
 
 
 - Updates and manages local WoW (World of Warcraft) addon folders/files if the addon author hosts them on GitHub.
