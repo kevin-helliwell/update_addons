@@ -20,3 +20,22 @@
 
 - This is done through a python script run locally on your computer. 
 - For general ease of use, I may implement it through an Electron-based desktop app in the future.
+
+# Built With
+- [Python](https://www.python.org/)
+
+# Getting Started
+
+# Usage
+
+# Roadmap
+
+# Contributing
+
+# License
+
+# Contact
+
+Kevin Helliwell - kbh789@gmail.com
+
+Repo Link: https://github.com/kevin-helliwell/update_addons
