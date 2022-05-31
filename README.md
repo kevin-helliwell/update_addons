@@ -2,6 +2,7 @@
 
 
 - Updates and manages local WoW (World of Warcraft) addon folders/files if the addon author hosts them on GitHub.
+- *Currently only works for base ElvUI (https://github.com/tukui-org/ElvUI/tree/main), but further support to come.*
 
 
 # Why would I need this?
