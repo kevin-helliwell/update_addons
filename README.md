@@ -1,4 +1,4 @@
-# update_addons
+# About The Project
 
 
 - Updates and manages local WoW (World of Warcraft) addon folders/files if the addon author hosts them on GitHub.
