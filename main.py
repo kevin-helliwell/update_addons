@@ -22,6 +22,13 @@ class AddonManager:
 
     # Methods
 
+    # Checks if C:/Program Files (x86)/World of Warcraft directory exists
+    def check_game_directory(self):
+        if os.path.exists("C:/Program Files (x86)/World of Warcraft"):
+            return self
+        else:
+            exit(f"World of Warcraft directory doesn't exist in C:/ drive.")
+
     # Gets version number from main ElvUI GitHub repo
     def get_version_number(self):
         api_data = requests.get(self.api_url).text
@@ -128,12 +135,13 @@ def main():
     # Creates ElvUI manager with class constructor
     ui_manager = AddonManager(addon_dir, download_dir, api_url, source_url)
 
+    # Checks if World of Warcraft directory exists in C:/ drive
     # Checks if current version already exists in downloads directory
     # Writes zip file to local "downloads" folder, appends version number for validation, and unzips file
 
     # Deletes folders with "_old" suffix and renames current folders with "_old" suffix if they exist
     # Moves files from unzipped folder to game/addons directory and deletes unzipped folder
-    ui_manager.check_local_version().manage_zip().manage_paths()
+    ui_manager.check_game_directory().check_local_version().manage_zip().manage_paths()
 
 
 if __name__ == "__main__":
