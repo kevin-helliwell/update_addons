@@ -14,20 +14,19 @@ import json
 class AddonManager:
 
     # Constructor logic
-    def __init__(self, addon_dir, download_dir, api_url, source_url):
+    def __init__(self, addon_dir, api_url, source_url):
         self.addon_dir = addon_dir
-        self.download_dir = download_dir
         self.api_url = api_url
         self.source_url = source_url
 
     # Methods
 
-    # Checks if C:/Program Files (x86)/World of Warcraft directory exists
-    def check_game_directory(self):
-        if os.path.exists("C:/Program Files (x86)/World of Warcraft"):
+    # Checks if C:/Program Files (x86)/World of Warcraft/_retail_/Interface/Addons directory exists
+    def check_addon_directory(self):
+        if os.path.exists(self.addon_dir):
             return self
         else:
-            exit(f"World of Warcraft directory doesn't exist in C:/ drive.")
+            exit(f"World of Warcraft addons directory doesn't exist.")
 
     # Gets version number from main ElvUI GitHub repo
     def get_version_number(self):
@@ -44,13 +43,14 @@ class AddonManager:
 
     # Checks if current version already exists in downloads directory
     def check_local_version(self):
-        download_dir_list = os.listdir(self.download_dir)
+        start_timer = time.time()
+        addon_dir_list = os.listdir(self.addon_dir)
         zip_file_name = self.get_zip_file_name()
         version_number = self.get_version_number()
-        if download_dir_list.count(f"{zip_file_name} {version_number}.zip") > 0:
+        if addon_dir_list.count(f"{zip_file_name} {version_number}.zip") > 0:
             end_timer = time.time()
-            exit(
-                f"Current version already exists in {self.download_dir}\n"f"Completed in {round((end_timer - start_timer), 2)} seconds")
+            print(f"Completed in {round((end_timer - start_timer), 2)} seconds\n")
+            exit(f"Current version already exists in {self.addon_dir}\n")
         return self
 
     # Gets source zip file data from an API request before being written to a file in another function
@@ -60,7 +60,7 @@ class AddonManager:
 
     # Gets file path in download directory for zip file data to be written to in another function
     def get_zip_file_path(self):
-        zip_file_path = f"{self.download_dir}/{self.get_zip_file_name()}"
+        zip_file_path = f"{self.addon_dir}/{self.get_zip_file_name()}"
         return zip_file_path
 
     # Writes zip file to local "downloads" directory
@@ -78,7 +78,7 @@ class AddonManager:
         archive_format = "zip"
 
         # Unzips file
-        shutil.unpack_archive(file_name, self.download_dir, archive_format)
+        shutil.unpack_archive(file_name, self.addon_dir, archive_format)
 
         return self
 
@@ -121,36 +121,60 @@ class AddonManager:
 
 # Program
 def main():
-    # Sets necessary parameters for program to run
-    config_values = ("C:/Program Files (x86)/World of Warcraft/_retail_/Interface/Addons", "C:/Users/kbh78/Downloads",
-                     "https://api.github.com/repos/tukui-org/ElvUI/branches/main",
-                     "https://github.com/tukui-org/ElvUI/archive/refs/heads/main.zip")
 
-    # addon_dir: Destination directory for new files to go
-    # download_dir: Source directory for downloaded files
-    # api_url: Where ElvUI API data is located
-    # source_url: Where ElvUI zip file is located
-    addon_dir, download_dir, api_url, source_url = config_values
+    # Sets necessary variables for program to run
+    default_path = "C:/Program Files (x86)/World of Warcraft/_retail_/Interface/Addons"
+    elvui_api = "https://api.github.com/repos/tukui-org/ElvUI/branches/main"
+    elvui_source = "https://github.com/tukui-org/ElvUI/archive/refs/heads/main.zip"
+    elvui_list = [elvui_api, elvui_source]
+    addons_list = [elvui_list]
 
-    # Creates ElvUI manager with class constructor
-    ui_manager = AddonManager(addon_dir, download_dir, api_url, source_url)
+    # Checks if default path needs to be changed for user
+    path_check = str(input(f"Is {default_path} your World of Warcraft addon directory? (y/n) \n"))
+    if path_check == "n":
+        new_path = str(input("Please enter the path of your World of Warcraft addon directory.\n"))
+        addon_path = new_path
+    if path_check == "y":
+        addon_path = default_path
 
-    # Checks if World of Warcraft directory exists in C:/ drive
-    # Checks if current version already exists in downloads directory
-    # Writes zip file to local "downloads" folder, appends version number for validation, and unzips file
-
-    # Deletes folders with "_old" suffix and renames current folders with "_old" suffix if they exist
-    # Moves files from unzipped folder to game/addons directory and deletes unzipped folder
-    ui_manager.check_game_directory().check_local_version().manage_zip().manage_paths()
-
-
-if __name__ == "__main__":
     # Starts timer
     start_timer = time.time()
 
-    # Runs program
-    main()
+    # Loops through addons_list and updates each one
+    for sub_list in addons_list:
+        config_values = (addon_path, sub_list[0], sub_list[1])
+        addon_dir, api_url, source_url = config_values
+        ui_manager = AddonManager(addon_dir, api_url, source_url)
+        ui_manager.check_addon_directory().check_local_version().manage_zip().manage_paths()
 
     # End of Program
     end_timer = time.time()
     print(f"Completed in {round((end_timer - start_timer), 2)} seconds")
+
+    # OLD CODE (DISREGARD)
+
+    # # addon_dir: Destination directory for new files to go
+    # # download_dir: Source directory for downloaded files
+    # # api_url: Where ElvUI API data is located
+    # # source_url: Where ElvUI zip file is located
+    # addon_dir, api_url, source_url = config_values
+    #
+    # # Creates ElvUI manager with class constructor
+    # ui_manager = AddonManager(addon_dir, api_url, source_url)
+    #
+    # # Checks if World of Warcraft directory exists in C:/ drive
+    # # Checks if current version already exists in downloads directory
+    # # Writes zip file to local "downloads" folder, appends version number for validation, and unzips file
+    #
+    # # Deletes folders with "_old" suffix and renames current folders with "_old" suffix if they exist
+    # # Moves files from unzipped folder to game/addons directory and deletes unzipped folder
+    # ui_manager.check_addon_directory().check_local_version().manage_zip().manage_paths()
+
+    # END OF OLD CODE (DISREGARD)
+
+
+if __name__ == "__main__":
+
+    # Runs program
+    main()
+
