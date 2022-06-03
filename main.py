@@ -41,7 +41,7 @@ class AddonManager:
         zip_file_name = f"{url_split_list[-3]}-{url_split_list[-1]}"
         return zip_file_name
 
-    # Checks if current version already exists in downloads directory
+    # Checks if current version already exists in addons directory
     def check_local_version(self):
         start_timer = time.time()
         addon_dir_list = os.listdir(self.addon_dir)
@@ -58,12 +58,12 @@ class AddonManager:
         zip_file_data = requests.get(self.source_url).content
         return zip_file_data
 
-    # Gets file path in download directory for zip file data to be written to in another function
+    # Gets file path in addons directory for zip file data to be written to in another function
     def get_zip_file_path(self):
         zip_file_path = f"{self.addon_dir}/{self.get_zip_file_name()}"
         return zip_file_path
 
-    # Writes zip file to local "downloads" directory
+    # Writes zip file to addons directory
     # Appends version number for validation
     def manage_zip(self):
         zip_file_path = self.get_zip_file_path()
@@ -82,7 +82,7 @@ class AddonManager:
 
         return self
 
-    # Manages file paths in downloads and game/addons directories based on API data
+    # Manages file paths in addons directory based on API data
     def manage_paths(self):
         # List of directory names to check for and move
         zip_file_path = self.get_zip_file_path()
@@ -91,13 +91,13 @@ class AddonManager:
         # Generates directory paths and checks if they exist already
         for i, _ in enumerate(zip_dir_list):
 
-            # Checks if any old version of ElvUI exists in game/addon directory
+            # Checks if non-current version of ElvUI exists in addons directory
             # Implicitly checks if this program has been run before
             old_path = os.path.join(self.addon_dir, f"{zip_dir_list[i]}_OLD")
             old_path_exists = os.path.exists(old_path)
 
-            # Checks if any current version of ElvUI exists in game/addon directory
-            # If no current version exists, then we don't have to make room for it in game/addon directory! :D
+            # Checks if current version of ElvUI exists in addons directory
+            # If current version not found, then there's no need to make room for it in the addons directory! :D
             current_path = os.path.join(self.addon_dir, zip_dir_list[i])
             current_path_exists = os.path.exists(current_path)
 
@@ -105,15 +105,15 @@ class AddonManager:
             if old_path_exists:
                 shutil.rmtree(old_path)
 
-            # Renames matching files if they exist already in your game/addon directory
+            # Renames matching files if they exist already in addons directory
             if current_path_exists:
                 os.rename(current_path, old_path)
 
-            # Moves the files extracted from unzipped ElvUI folder in downloads directory to game/addon directory
+            # Moves the files extracted from unzipped ElvUI folder to addons directory
             new_path = os.path.join(zip_file_path, zip_dir_list[i])
             shutil.move(new_path, self.addon_dir)
 
-        # Removes empty unzipped ElvUI folder in downloads directory
+        # Removes empty unzipped ElvUI folder in addons directory
         shutil.rmtree(zip_file_path)
 
         return self
@@ -124,17 +124,19 @@ def main():
 
     # Sets necessary variables for program to run
     default_path = "C:/Program Files (x86)/World of Warcraft/_retail_/Interface/Addons"
-    elvui_api = "https://api.github.com/repos/tukui-org/ElvUI/branches/main"
-    elvui_source = "https://github.com/tukui-org/ElvUI/archive/refs/heads/main.zip"
-    elvui_list = [elvui_api, elvui_source]
-    addons_list = [elvui_list]
+    elv_api_url = "https://api.github.com/repos/tukui-org/ElvUI/branches/main"
+    elv_source_url = "https://github.com/tukui-org/ElvUI/archive/refs/heads/main.zip"
+    elv_list = [elv_api_url, elv_source_url]
+    addons_list = [elv_list]
 
     # Checks if default path needs to be changed for user
     path_check = str(input(f"Is {default_path} your World of Warcraft addon directory? (y/n) \n"))
     if path_check == "n":
         new_path = str(input("Please enter the path of your World of Warcraft addon directory.\n"))
         addon_path = new_path
-    if path_check == "y":
+    elif path_check == "y":
+        addon_path = default_path
+    else:
         addon_path = default_path
 
     # Starts timer
@@ -177,4 +179,3 @@ if __name__ == "__main__":
 
     # Runs program
     main()
-
