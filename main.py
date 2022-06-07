@@ -43,13 +43,10 @@ class AddonManager:
 
     # Checks if current version already exists in addons directory
     def check_local_version(self):
-        # start_timer = time.time()
         addon_dir_list = os.listdir(self.addon_dir)
         zip_file_name = self.get_zip_file_name()
         version_number = self.get_version_number()
         if addon_dir_list.count(f"{zip_file_name} {version_number}.zip") > 0:
-            # end_timer = time.time()
-            # print(f"Done! Completed in {round((end_timer - start_timer), 2)} seconds\n")
             exit(f"Current version already exists in {self.addon_dir}\n")
         return self
 
